@@ -1,0 +1,5 @@
+export const ADD_RAISON = "ADD_RAISON";
+export const POST_RAISON = "POST_RAISON";
+export const RAISON_LOADING = "RAISON_LOADING";
+export const RAISON_FAILURE = "RAISON_FAILURE";
+

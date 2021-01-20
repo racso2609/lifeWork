@@ -1,0 +1,15 @@
+.App{
+    height: 100%;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+    top: 0px;
+    
+}
+.footer{
+    position: relative;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+}
