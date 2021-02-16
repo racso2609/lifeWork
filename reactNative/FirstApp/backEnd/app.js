@@ -20,56 +20,74 @@ const Roles = require("./initialSetUps");
 var adminRouter = require('./routes/admin');
 var usersRouter = require('./routes/users');
 
-Roles.createRoles();
+
+
 
 
 var app = express();
 var limit = ratelimit({
-  max:100,
-  windowMs: 60*60*1000,
+  max: 100,
+  windowMs: 60 * 60 * 1000,
   message: 'Too Many request, you are locked for 1 hour'
 });
 
 //set 
-app.set("PORT", process.env.port || 3001);
+app.set("PORT", process.env.PORT || 3001);
+app.set("HOST", process.env.HOST || '192.168.0.103');
 
 
 //Middleware
 app.use(logger('dev'));//morgan
 app.use(express.json({limit: '1mb'})); //limit petition
-app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+app.use(express.urlencoded({extended: true, limit: '1mb'}));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public/build')));
 
 app.use(xss());
 app.use(helmet());
 app.use(cors()); //comunication between server
-app.options('*',cors());
+app.options('*', cors());
 app.use(passport.initialize());
-app.use('*',limit);
+app.use('*', limit);
 
 //Routes
 app.use('/api/admin', adminRouter);
 app.use('/api/users', usersRouter);
 
 
+
 const server = http.createServer(app);
-const io = socket(server,{
-  cors: "http://localhost:3001/",
-  methods: ["GET","POST"]
+// const io = socket(server,{
+//   cors: `http://${app.get('HOST')}:${app.get('PORT')}/`,
+//   methods: ["GET","POST"]
+// });
+
+
+// require("./sockets")(io); 
+
+server.listen(app.get("PORT"), () => {
+  console.log("Server running on Port " + app.get("PORT"));
+
+}).on("error", (err) => {
+  console.log(err.message)
+
 });
 
 
-require("./sockets")(io); 
 
 
-server.listen(app.get("PORT"),()=>{
-  console.log("Server on Port "+ app.get("PORT"));
-});
+const connect = mongoose.connect(config.mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true});
+connect.then(() => {
+  const connection = mongoose.connection;
+  console.log("Correctly connect");
+  Roles.createRoles();
+  
 
-const connect = mongoose.connect(config.mongoUrl,{useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true});
+  connection.on('error', (err) => console.log(err.message));
+  
+})
 
-connect.then((db)=>console.log("Correctly Connect"));
+
 
 
 module.exports = app;

@@ -1,4 +1,4 @@
-const  Role = require( "./models/roles");
+const Role = require("./models/roles");
 
 
 
@@ -12,12 +12,12 @@ exports.createRoles = async () => {
 
     // Create default Roles
     const values = await Promise.all([
-      new Role({ Name: "user" }).save(),
-      new Role({ Name: "admin" }).save(),
+      new Role({Name: "user"}).save(),
+      new Role({Name: "admin"}).save(),
     ]);
 
     console.log(values);
   } catch (error) {
-    console.error(error);
+    console.error("Err: ",error);
   }
 };
