@@ -7,12 +7,13 @@ const http = require('http');
 const ratelimit = require('express-rate-limit');
 const xss = require('xss-clean');
 const cors = require('cors');
-const multer = require('multer');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const passport = require('passport');
 const mongoose = require('mongoose');
+
 const socket = require('socket.io');
+const multer = require('multer');
 
 const config = require('./config');
 const Roles = require("./initialSetUps");
@@ -42,6 +43,7 @@ app.use(express.json({limit: '1mb'})); //limit petition
 app.use(express.urlencoded({extended: true, limit: '1mb'}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public/build')));
+app.use(mongoSanitize());
 
 app.use(xss());
 app.use(helmet());
