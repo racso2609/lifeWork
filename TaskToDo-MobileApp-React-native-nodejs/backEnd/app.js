@@ -21,9 +21,16 @@ const Roles = require("./initialSetUps");
 var adminRouter = require('./routes/admin');
 var usersRouter = require('./routes/users');
 
+var env = require('node-env-file'); // .env file
+env(__dirname + '/.env');
 
 
+const { MONGO_DB_URI, MONGO_DB_URI_TEST, NODE_ENV } = process.env;
+const connectionString = NODE_ENV === 'test' ? MONGO_DB_URI_TEST : MONGO_DB_URI;
 
+if (!connectionString) {
+  console.error('Enviroment variable not charged');
+}
 
 var app = express();
 var limit = ratelimit({
@@ -39,8 +46,8 @@ app.set("HOST", process.env.HOST || '192.168.0.103');
 
 //Middleware
 app.use(logger('dev'));//morgan
-app.use(express.json({limit: '1mb'})); //limit petition
-app.use(express.urlencoded({extended: true, limit: '1mb'}));
+app.use(express.json({ limit: '1mb' })); //limit petition
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public/build')));
 app.use(mongoSanitize());
@@ -55,7 +62,7 @@ app.use('*', limit);
 //Routes
 app.use('/api/admin', adminRouter);
 app.use('/api/users', usersRouter);
-app.use((req,res)=>{
+app.use((req, res) => {
   res.status(404).json({
     ErrMess: '404 NOT FOUND',
     Mess: null
@@ -84,16 +91,16 @@ server.listen(app.get("PORT"), () => {
 
 
 
-const connect = mongoose.connect(config.mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true});
+const connect = mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
 connect.then(() => {
   const connection = mongoose.connection;
   console.log("Correctly connect");
   Roles.createRoles();
-  
+
 
   connection.on('error', (err) => console.log(err.message));
-  
-}).catch(err=>console.log(err.message))
+
+}).catch(err => console.log(err.message))
 
 
 

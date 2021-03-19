@@ -27,8 +27,7 @@ router.post('/signup', authenticated.validEmail, authenticated.validPassword, as
       Email: null,
       Name: null,
       ErrMess: null,
-      Message: 'Signup Succesfully',
-      Err: false
+      Message: 'Signup Succesfully'
     });
 
   } catch (err) {
@@ -68,7 +67,7 @@ router.post('/login', authenticated.validEmail, authenticated.validPassword, asy
           ErrMess: null,
           Message: null,
           isLogin: true,
-          Err: false
+
         })
       } else {
         res.status(500).json({
@@ -94,8 +93,7 @@ router.post('/login', authenticated.validEmail, authenticated.validPassword, asy
         Lastname: null,
         ErrMess: 'User Don`t esxist',
         Message: null,
-        isLogin: false,
-        Err: true
+        isLogin: false
       })
     }
 
@@ -126,7 +124,6 @@ router.route('/simple-task')
   .get(passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
       const simpleTask = await simpleTaskModel.find({ AuthorId: req.user._id });
-      console.log(simpleTask);
       res.status(200).json({
         ErrMess: null,
         Message: null,
@@ -134,7 +131,7 @@ router.route('/simple-task')
       });
 
     } catch (err) {
-      console.log(err.message);
+      console.error(err.message);
       res.status(500).json({
         ErrMess: 'We could not get the Task!!',
         Message: null
@@ -171,7 +168,6 @@ router.route('/simple-task')
         ErrMess: null,
         Message: deleted.deletedCount + ' Simple Task were deleted',
         simpleTask: Task,
-        Err: false
       })
 
     } catch (err) {
@@ -179,8 +175,7 @@ router.route('/simple-task')
       console.log(err.message);
       res.status(500).json({
         ErrMess: 'Fail Deleting Simple Task',
-        Message: null,
-        Err: true
+        Message: null
       })
     }
   })
@@ -196,16 +191,14 @@ router.route('/simple-task/:simpleTaskId')
       res.status(200).json({
         ErrMess: null,
         Message: updated.n + ' Simple Task were Updated Succesfully',
-        SimpleTask: simpleTask,
-        Err: false
+        SimpleTask: simpleTask
       })
     } catch (err) {
 
       console.log(err.message);
       res.status(500).json({
         ErrMess: 'Imposible to do this right now',
-        Message: null,
-        Err: true
+        Message: null
       });
     }
   })
@@ -217,16 +210,14 @@ router.route('/simple-task/:simpleTaskId')
       res.status(200).json({
         ErrMess: null,
         Message: deleted.deletedCount + ' Simple Task were deleted',
-        SimpleTask: SimpleTask,
-        Err: false
+        SimpleTask: SimpleTask
       })
     } catch (err) {
 
       console.log(err.message);
       res.status(500).json({
         ErrMess: 'Fail Deleting Simple Task',
-        Message: null,
-        Err: true
+        Message: null
       })
     }
 
@@ -239,9 +230,8 @@ router.route("/medium-task")
       const MediumTask = await mediumTaskModel.find({ AuthorId: req.user._id });
       res.status(200).json({
         MediumTask: MediumTask,
-        Err: false,
         ErrMess: null,
-        Message: MediumTask
+        Message: null
       })
 
 
@@ -264,7 +254,6 @@ router.route("/medium-task")
       const MediumTask = await mediumTaskModel.find({ AuthorId: req.user._id });
       res.status(200).json({
         MediumTask: MediumTask,
-        Err: false,
         ErrMess: null,
         Message: 'MediumTask Added correctly'
       })
@@ -288,7 +277,6 @@ router.route("/medium-task")
 
 
       res.status(200).json({
-        Err: false,
         ErrMess: null,
         Message: deleted.deletedCount + ' Medium Task were deleted',
         MediumTask: MediumTask
@@ -326,35 +314,34 @@ router.route("/medium-task/:mediumTaskId")
         ErrMess: null,
         Message: updated.n + ' Medium Task were Updated Succesfully',
         MediumTask: mediumTask,
-        Err: false
       })
     } catch (err) {
 
       console.log(err.message);
       res.status(500).json({
         ErrMess: 'Imposible to do this right now',
-        Message: null,
-        Err: true
+        Message: null
       });
     }
   })
   .post(passport.authenticate(jwt, { session: false }), async (req, res) => {
 
-    const {SimpleTaskId} = req.body;
+    const { SimpleTaskId } = req.body;
     try {
       const simpleTask = await simpleTaskModel.findById(SimpleTaskId);
       if (simpleTask) {
         const mediumTask = await mediumTaskModel.findById(req.params.mediumTaskId);
-        if (mediumTask) {condition
+        if (mediumTask) {
+          condition
           mediumTask.Steps.push(SimpleTaskId);
           mediumTask.save();
-        }else{
+        } else {
           res.status(404).json({
             ErrMess: 'mediumTaskId dont exist',
             Message: null
           })
         }
-      }else{
+      } else {
         res.status(500).json({
           ErrMess: 'The task that you want add dont exist',
           Message: null
@@ -362,7 +349,7 @@ router.route("/medium-task/:mediumTaskId")
       }
 
     } catch (error) {
-      
+
     }
   })
   .delete(passport.authenticate('jwt', { session: false }), async (req, res) => {
@@ -374,15 +361,13 @@ router.route("/medium-task/:mediumTaskId")
         ErrMess: null,
         Message: deleted.deletedCount + ' Medium Task were deleted',
         MediumTask: MediumTask,
-        Err: false
       })
     } catch (err) {
 
       console.log(err.message);
       res.status(500).json({
         ErrMess: 'Fail Deleting Medium Task',
-        Message: null,
-        Err: true
+        Message: null
       })
       res.statusCode = 500;
     }
